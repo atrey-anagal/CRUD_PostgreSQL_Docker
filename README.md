@@ -86,7 +86,7 @@ To quickly set up a PostgreSQL database using Docker, follow these steps:
    spring.jpa.hibernate.ddl-auto=update
    ```
 
-   2. **Configure pom file:**
+   3. **Configure pom file:**
 
    Add postgreSQL depedancy in `pom.xml` file:
 
