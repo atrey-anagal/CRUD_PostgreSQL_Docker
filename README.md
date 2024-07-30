@@ -88,17 +88,17 @@ To quickly set up a PostgreSQL database using Docker, follow these steps:
 
  3. **Configure the pom.xml File**
 
-   Ensure that the PostgreSQL dependency is included in your `pom.xml` file:
-
-   ```xml
-   <dependency>
-       <groupId>org.postgresql</groupId>
-       <artifactId>postgresql</artifactId>
-       <scope>runtime</scope>
-   </dependency>
-   ```
-
-   This dependency ensures that the PostgreSQL driver is available at runtime.
+      Ensure that the PostgreSQL dependency is included in your `pom.xml` file:
+   
+      ```xml
+      <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+          <scope>runtime</scope>
+      </dependency>
+      ```
+   
+      This dependency ensures that the PostgreSQL driver is available at runtime.
 
 4. **Build the Project:**
 
