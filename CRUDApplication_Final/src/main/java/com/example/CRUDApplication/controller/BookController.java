@@ -1,0 +1,106 @@
+package com.example.CRUDApplication.controller;
+import java.util.Optional;
+import com.example.CRUDApplication.model.Book;
+import com.example.CRUDApplication.repo.BookRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Sort;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+public class BookController {
+
+    @Autowired
+    private BookRepo bookRepo;
+
+    @GetMapping("/getAllBooks")
+    public ResponseEntity<List<Book>> getAllBooks(@RequestParam(value = "sort", required = false) String sort) {
+        try {
+            Sort sorting = Sort.unsorted();
+            if (sort != null) {
+                if ("desc".equalsIgnoreCase(sort)) {
+                    sorting = Sort.by(Sort.Order.desc("id"));
+                } else if ("asc".equalsIgnoreCase(sort)) {
+                    sorting = Sort.by(Sort.Order.asc("id"));
+                }
+            }
+
+            List<Book> bookList = bookRepo.findAll(sorting);
+
+            if (bookList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(bookList, HttpStatus.OK);
+
+        } catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GetMapping("/getBookById/{id}")
+    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+
+        Optional<Book> bookData = bookRepo.findById(id);
+
+        if(bookData.isPresent()) {
+            return new ResponseEntity<>(bookData.get(),HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/addBook")
+    public ResponseEntity<Book> addBook(@RequestBody Book book) {
+            Book bookObj = bookRepo.save(book);
+
+            return new ResponseEntity<>(bookObj, HttpStatus.OK);
+    }
+
+    @PostMapping("/updateBookById/{id}")
+    public ResponseEntity<Book> updateBookById(@PathVariable Long id, @RequestBody Book newBookData) {
+        Optional<Book> oldBookData = bookRepo.findById(id);
+
+        if(oldBookData.isPresent()) {
+            Book updatedBookData = oldBookData.get();
+            updatedBookData.setTitle(newBookData.getTitle());
+            updatedBookData.setAuthor(newBookData.getAuthor());
+
+            Book bookObj = bookRepo.save(updatedBookData);
+            return new ResponseEntity<>(bookObj, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @DeleteMapping("/deleteBookById/{id}")
+    public ResponseEntity<Void> deleteBookById(@PathVariable Long id) {
+        if (!bookRepo.existsById(id)) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        bookRepo.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+    @GetMapping("/getBooksByTitle")
+    public ResponseEntity<List<Book>> getBooksByTitle(@RequestParam String title) {
+        try {
+            List<Book> bookList = bookRepo.findByTitleContainingIgnoreCase(title);
+
+            if (bookList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(bookList, HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+}
