@@ -348,11 +348,11 @@ function sortBooks(order) {
             .catch(error => console.error('Error importing CSV file:', error));
         }
 
-   let currentPage = 0;
+  let currentPage = 0;
 const pageSize = 10;
 
-function fetchBooks() {
-    fetch(`${apiUrl}/getAllBooks?page=${currentPage}&size=${pageSize}`)
+function fetchBooks(sortOrder = '') {
+    fetch(`${apiUrl}/getAllBooks?page=${currentPage}&size=${pageSize}&sort=${sortOrder}`)
         .then(response => response.json())
         .then(data => {
             const tableBody = document.querySelector('#bookTable tbody');
@@ -381,16 +381,12 @@ function previousPage() {
 }
 
 function nextPage() {
-    fetch(`${apiUrl}/getAllBooks?page=${currentPage + 1}&size=${pageSize}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.content.length > 0) {
-                currentPage++;
-                fetchBooks();
-            }
-        })
-        .catch(error => console.error('Error checking next page:', error));
+    if (currentPage < document.getElementById('currentPageNumber').innerText.split(' ')[3] - 1) {
+        currentPage++;
+        fetchBooks();
+    }
 }
+
 
 </script>
 </body>
